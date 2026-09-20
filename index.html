@@ -122,11 +122,6 @@
     list.innerHTML = html;
   }
   q.addEventListener("input", () => render(q.value));
-  document.getElementById("latest").addEventListener("click", () => {
-    q.value = ""; render("");
-    const last = DATA[DATA.length - 1]; const el = last && document.getElementById("g" + Math.floor((last.n - 1) / 20));
-    if (el) el.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
-  });
 </script>
 
 </body>
