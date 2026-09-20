@@ -51,6 +51,8 @@
   .btn.primary:hover { background: #ecc86f; }
   .btn svg { width: 15px; height: 15px; fill: currentColor; }
 
+  .inapp { display: none; background: var(--panel-2); border-bottom: 1px solid var(--gold-line); font-size: 13px; color: var(--text); text-align: center; padding: 9px 16px; line-height: 1.5; }
+  .inapp b { color: var(--gold); }
   /* ---- controls ---- */
   .bar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 2; background: var(--ink); border-bottom: 1px solid var(--gold-line); }
   .bar-inner { display: flex; gap: 8px; align-items: center; padding-block: 10px; }
@@ -87,6 +89,8 @@
   </div>
 </header>
 
+<div class="inapp" id="inapp">กำลังดูผ่านแอป Facebook — ถ้ากดตอนแล้วไม่เปิด ให้แตะ <b>⋯</b> มุมขวาบน แล้วเลือก <b>เปิดในเบราว์เซอร์</b></div>
+
 <div class="bar">
   <div class="wrap bar-inner">
     <input id="q" type="search" placeholder="ค้นหาเลขตอนหรือชื่อตอน…" aria-label="ค้นหาตอน" autocomplete="off">
@@ -98,6 +102,7 @@
 <footer class="wrap">สารบัญอัปเดตทุกวันอาทิตย์ · ตอนใหม่โพสต์ที่หน้าเพจทุกวัน 16:00</footer>
 
 <script>
+  if (/FBAN|FBAV|FB_IAB|Instagram/i.test(navigator.userAgent)) document.getElementById("inapp").style.display = "block";   // Facebook/Instagram in-app browser blocks links back into facebook.com
   let DATA = [];
   const list = document.getElementById("list"), q = document.getElementById("q");
   const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
