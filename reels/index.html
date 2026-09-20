@@ -31,18 +31,27 @@
 <div class="wrap">
   <header><h1>Reels ทุกตอน</h1><a href="../">← สารบัญ</a></header>
 
-  <p class="note">กดปุ่มตอนเพื่อเปิดรีลบน Facebook · 13 รีล จาก 7 ตอน · รายการอัปเดตทุกวันอาทิตย์</p>
-  <ol id="list">
-<li class="ch" data-n="1"><span class="num">1</span><span class="t">รากฐานอัปยศ</span><span class="chips"><a class="chip" href="https://www.facebook.com/reel/4428986014050192/" target="_blank" rel="noopener">▶ 1/2</a><a class="chip" href="https://www.facebook.com/reel/1742957603574416/" target="_blank" rel="noopener">▶ 2/2</a></span></li>
-<li class="ch" data-n="2"><span class="num">2</span><span class="t">เสียงจากคัมภีร์</span><span class="chips"><a class="chip" href="https://www.facebook.com/reel/1750469449615032/" target="_blank" rel="noopener">▶ ตอนที่ 2</a></span></li>
-<li class="ch" data-n="3"><span class="num">3</span><span class="t">เงาในความมืด</span><span class="chips"><a class="chip" href="https://www.facebook.com/reel/1123902533532916/" target="_blank" rel="noopener">▶ 1/2</a><a class="chip" href="https://www.facebook.com/reel/4435463400001386/" target="_blank" rel="noopener">▶ 2/2</a></span></li>
-<li class="ch" data-n="4"><span class="num">4</span><span class="t">ป่าต้องห้าม</span><span class="chips"><a class="chip" href="https://www.facebook.com/reel/1840271514011694/" target="_blank" rel="noopener">▶ 1/2</a><a class="chip" href="https://www.facebook.com/reel/2479646775849099/" target="_blank" rel="noopener">▶ 2/2</a></span></li>
-<li class="ch" data-n="5"><span class="num">5</span><span class="t">หน้าผาสุดทาง</span><span class="chips"><a class="chip" href="https://www.facebook.com/reel/1395279882156942/" target="_blank" rel="noopener">▶ 1/2</a><a class="chip" href="https://www.facebook.com/reel/1291155483063070/" target="_blank" rel="noopener">▶ 2/2</a></span></li>
-<li class="ch" data-n="6"><span class="num">6</span><span class="t">ท่าแรกจากคัมภีร์</span><span class="chips"><a class="chip" href="https://www.facebook.com/reel/1400375938380427/" target="_blank" rel="noopener">▶ 1/2</a><a class="chip" href="https://www.facebook.com/reel/1822027779235920/" target="_blank" rel="noopener">▶ 2/2</a></span></li>
-<li class="ch" data-n="7"><span class="num">7</span><span class="t">สายตาที่จับจ้อง</span><span class="chips"><a class="chip" href="https://www.facebook.com/reel/1101839265828633/" target="_blank" rel="noopener">▶ 1/2</a><a class="chip" href="https://www.facebook.com/reel/2507524139752493/" target="_blank" rel="noopener">▶ 2/2</a></span></li>
-  </ol>
+  <p class="note" id="note">กดปุ่มตอนเพื่อเปิดรีลบน Facebook · รายการอัปเดตทุกวันอาทิตย์</p>
+  <ol id="list"></ol>
   <footer>รีลตอนใหม่โพสต์ทุกวัน · ตอนที่ยังไม่มีในรายการ ดูได้ที่แท็บ Reels ของเพจ Online Novel</footer>
 </div>
 
+<script>
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+  fetch("../data/reels.json", { cache: "no-store" }).then(r => r.json()).then(reels => {
+    const chapters = new Map();
+    for (const x of reels.sort((a, b) => a.n - b.n || a.part - b.part)) {
+      if (!chapters.has(x.n)) chapters.set(x.n, { title: x.title, parts: [] });
+      chapters.get(x.n).parts.push(x);
+    }
+    let html = "";
+    for (const [n, c] of chapters) {
+      const chips = c.parts.map(r => `<a class="chip" href="${esc(r.url)}" target="_blank" rel="noopener">▶ ${r.parts === 1 ? "ตอนที่ " + n : r.part + "/" + r.parts}</a>`).join("");
+      html += `<li class="ch"><span class="num">${n}</span><span class="t">${esc(c.title)}</span><span class="chips">${chips}</span></li>`;
+    }
+    document.getElementById("list").innerHTML = html;
+    document.getElementById("note").textContent = `กดปุ่มตอนเพื่อเปิดรีลบน Facebook · ${reels.length} รีล จาก ${chapters.size} ตอน · รายการอัปเดตทุกวันอาทิตย์`;
+  }).catch(() => { document.getElementById("list").innerHTML = '<li class="ch"><span class="t">โหลดรายการไม่สำเร็จ: ลองรีเฟรชหน้า</span></li>'; });
+</script>
 </body>
 </html>
