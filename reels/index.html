@@ -51,7 +51,7 @@
 <div class="wrap">
   <header><h1>Reels ทุกตอน</h1><a href="../">← สารบัญ</a></header>
 
-  <section class="player" aria-label="เครื่องเล่นรีลต่อเนื่อง">
+  <section class="player" aria-label="เครื่องเล่นรีลต่อเนื่อง" hidden>
     <div class="stage" id="stage">
       <button class="start" id="start" type="button"><span><b>▶ เล่นตั้งแต่ตอนแรก</b><small>เล่นต่อเนื่องทุกตอนอัตโนมัติ · จบตอนแล้วไปตอนถัดไปเอง</small></span></button>
     </div>
@@ -67,7 +67,7 @@
     <div class="fallback" id="fallback">เครื่องเล่นในหน้านี้เปิดไม่ได้ในเบราว์เซอร์นี้ · กดปุ่มตอนด้านล่างเพื่อดูบน Facebook แทน</div>
   </section>
 
-  <p class="note">กดปุ่มตอนเพื่อเล่นในเครื่องเล่นด้านบน · 13 รีล จาก 7 ตอน · รายการอัปเดตทุกวันอาทิตย์</p>
+  <p class="note">กดปุ่มตอนเพื่อเปิดรีลบน Facebook · 13 รีล จาก 7 ตอน · รายการอัปเดตทุกวันอาทิตย์</p>
   <ol id="list">
 <li class="ch" data-n="1"><span class="num">1</span><span class="t">รากฐานอัปยศ</span><span class="chips"><a class="chip" href="https://www.facebook.com/reel/4428986014050192/" target="_blank" rel="noopener">▶ 1/2</a><a class="chip" href="https://www.facebook.com/reel/1742957603574416/" target="_blank" rel="noopener">▶ 2/2</a></span></li>
 <li class="ch" data-n="2"><span class="num">2</span><span class="t">เสียงจากคัมภีร์</span><span class="chips"><a class="chip" href="https://www.facebook.com/reel/1750469449615032/" target="_blank" rel="noopener">▶ ตอนที่ 2</a></span></li>
@@ -103,7 +103,6 @@
   document.getElementById("start").addEventListener("click", () => load(0));
   document.getElementById("next").addEventListener("click", next);
   document.getElementById("prev").addEventListener("click", () => load(i - 1));
-  document.querySelectorAll(".chip").forEach((c, k) => c.addEventListener("click", e => { e.preventDefault(); load(k); window.scrollTo({ top: 0, behavior: "smooth" }); }));
 
   window.fbAsyncInit = function () {
     FB.init({ xfbml: false, version: "v21.0" });
