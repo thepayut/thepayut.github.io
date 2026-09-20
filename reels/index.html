@@ -10,35 +10,118 @@
   :root { --ink:#0a0c11; --panel:#11151d; --panel-2:#171c27; --text:#f1e9d3; --muted:#a59d88; --gold:#e0bb5e; --gold-line:rgba(224,187,94,.38); --gold-faint:rgba(224,187,94,.10); color-scheme: dark; }
   body { margin:0; background:var(--ink); color:var(--text); font-family:"Sarabun","Noto Sans Thai",system-ui,sans-serif; font-size:16px; line-height:1.6; }
   .wrap { max-width:680px; margin:0 auto; padding-inline:16px; }
-  header { padding-block:28px 14px; display:flex; align-items:baseline; justify-content:space-between; gap:12px; border-bottom:1px solid var(--gold-line); }
+  header { padding-block:22px 12px; display:flex; align-items:baseline; justify-content:space-between; gap:12px; }
   h1 { margin:0; font-family:"Taviraj",serif; font-weight:700; font-size:clamp(22px,6vw,30px); color:var(--gold); }
   header a { color:var(--muted); font-size:14px; text-decoration:none; white-space:nowrap; }
   header a:hover { color:var(--gold); }
-  .note { font-size:13px; color:var(--muted); padding-block:10px 4px; }
-  ol { list-style:none; margin:0; padding:0; display:grid; gap:8px; padding-block:12px 40px; }
-  .ch { display:grid; grid-template-columns:46px 1fr; gap:4px 14px; align-items:center; padding:10px 12px 10px 8px; background:var(--panel); }
+
+  /* ---- player: the System panel around the video ---- */
+  .player { position:relative; border:1px solid var(--gold); outline:1px solid var(--gold-line); outline-offset:6px; background:#000; box-shadow:0 0 50px 6px rgba(224,187,94,.18); margin:10px 4px 0; }
+  .stage { position:relative; width:min(100%, calc(72vh * 9 / 16)); aspect-ratio:9/16; margin:0 auto; background:#000; overflow:hidden; }
+  .stage .fb-video, .stage span, .stage iframe { position:absolute !important; inset:0; width:100% !important; height:100% !important; }
+  .start { position:absolute; inset:0; display:grid; place-items:center; background:rgba(10,12,17,.6); cursor:pointer; border:0; color:var(--text); font:inherit; text-align:center; z-index:2; }
+  .start b { display:inline-flex; align-items:center; gap:10px; padding:14px 22px; background:var(--gold); color:#15120b; font-weight:700; font-size:17px; }
+  .start small { display:block; margin-top:10px; color:#ddd3bb; font-size:13px; }
+  .bar { display:grid; grid-template-columns:auto 1fr auto; align-items:center; gap:8px; padding:10px 12px; background:var(--panel-2); border-top:1px solid var(--gold-line); }
+  .bar button { font:inherit; font-weight:600; font-size:14px; padding:9px 12px; border:1px solid var(--gold-line); background:var(--panel); color:var(--gold); cursor:pointer; white-space:nowrap; }
+  .bar button:hover { border-color:var(--gold); }
+  .now { text-align:center; min-width:0; }
+  .now .k { display:block; font-family:"Taviraj",serif; font-size:12px; letter-spacing:.12em; color:var(--gold); }
+  .now .t { display:block; font-weight:600; font-size:15px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .opts { display:flex; flex-wrap:wrap; gap:8px 18px; justify-content:center; padding:10px 12px 12px; font-size:14px; color:var(--muted); background:var(--panel-2); }
+  .opts label { display:inline-flex; align-items:center; gap:6px; cursor:pointer; }
+  .opts a { color:var(--gold); text-decoration:none; }
+  .fallback { display:none; padding:14px; text-align:center; color:var(--muted); font-size:14px; background:var(--panel-2); }
+
+  /* ---- list ---- */
+  .note { font-size:13px; color:var(--muted); padding-block:18px 4px; }
+  ol { list-style:none; margin:0; padding:0; display:grid; gap:8px; padding-block:8px 40px; }
+  .ch { display:grid; grid-template-columns:46px 1fr; gap:4px 14px; align-items:center; padding:10px 12px 10px 8px; background:var(--panel); border:1px solid transparent; }
+  .ch.playing { border-color:var(--gold); }
   .num { grid-row:1/3; display:grid; place-items:center; width:46px; height:46px; border:1px solid var(--gold-line); font-family:"Taviraj",serif; font-weight:700; font-size:18px; color:var(--gold); background:var(--gold-faint); }
   .t { font-weight:600; }
   .chips { display:flex; flex-wrap:wrap; gap:8px; }
-  .chip { display:inline-block; padding:6px 12px; border:1px solid var(--gold); color:#15120b; background:var(--gold); font-weight:600; font-size:14px; text-decoration:none; }
-  .chip:hover { background:#ecc86f; }
+  .chip { display:inline-block; padding:6px 12px; border:1px solid var(--gold-line); color:var(--gold); background:var(--panel-2); font-weight:600; font-size:14px; text-decoration:none; cursor:pointer; }
+  .chip:hover, .chip.on { background:var(--gold); color:#15120b; border-color:var(--gold); }
   footer { padding-block:0 40px; font-size:12px; color:var(--muted); text-align:center; }
 </style>
 </head>
 <body>
+<div id="fb-root"></div>
 <div class="wrap">
   <header><h1>Reels ทุกตอน</h1><a href="../">← สารบัญ</a></header>
-  <p class="note">กดปุ่มเพื่อเปิดรีลบน Facebook · 13 รีล จาก 7 ตอน · รายการนี้อัปเดตทุกวันอาทิตย์</p>
-  <ol>
-<li class="ch"><span class="num">1</span><span class="t">รากฐานอัปยศ</span><span class="chips"><a class="chip" href="https://www.facebook.com/reel/4428986014050192/" target="_blank" rel="noopener">▶ ตอนที่ 1 · 1/2</a><a class="chip" href="https://www.facebook.com/reel/1742957603574416/" target="_blank" rel="noopener">▶ ตอนที่ 1 · 2/2</a></span></li>
-<li class="ch"><span class="num">2</span><span class="t">เสียงจากคัมภีร์</span><span class="chips"><a class="chip" href="https://www.facebook.com/reel/1750469449615032/" target="_blank" rel="noopener">▶ ตอนที่ 2 · 1/1</a></span></li>
-<li class="ch"><span class="num">3</span><span class="t">เงาในความมืด</span><span class="chips"><a class="chip" href="https://www.facebook.com/reel/1123902533532916/" target="_blank" rel="noopener">▶ ตอนที่ 3 · 1/2</a><a class="chip" href="https://www.facebook.com/reel/4435463400001386/" target="_blank" rel="noopener">▶ ตอนที่ 3 · 2/2</a></span></li>
-<li class="ch"><span class="num">4</span><span class="t">ป่าต้องห้าม</span><span class="chips"><a class="chip" href="https://www.facebook.com/reel/1840271514011694/" target="_blank" rel="noopener">▶ ตอนที่ 4 · 1/2</a><a class="chip" href="https://www.facebook.com/reel/2479646775849099/" target="_blank" rel="noopener">▶ ตอนที่ 4 · 2/2</a></span></li>
-<li class="ch"><span class="num">5</span><span class="t">หน้าผาสุดทาง</span><span class="chips"><a class="chip" href="https://www.facebook.com/reel/1395279882156942/" target="_blank" rel="noopener">▶ ตอนที่ 5 · 1/2</a><a class="chip" href="https://www.facebook.com/reel/1291155483063070/" target="_blank" rel="noopener">▶ ตอนที่ 5 · 2/2</a></span></li>
-<li class="ch"><span class="num">6</span><span class="t">ท่าแรกจากคัมภีร์</span><span class="chips"><a class="chip" href="https://www.facebook.com/reel/1400375938380427/" target="_blank" rel="noopener">▶ ตอนที่ 6 · 1/2</a><a class="chip" href="https://www.facebook.com/reel/1822027779235920/" target="_blank" rel="noopener">▶ ตอนที่ 6 · 2/2</a></span></li>
-<li class="ch"><span class="num">7</span><span class="t">สายตาที่จับจ้อง</span><span class="chips"><a class="chip" href="https://www.facebook.com/reel/1101839265828633/" target="_blank" rel="noopener">▶ ตอนที่ 7 · 1/2</a><a class="chip" href="https://www.facebook.com/reel/2507524139752493/" target="_blank" rel="noopener">▶ ตอนที่ 7 · 2/2</a></span></li>
+
+  <section class="player" aria-label="เครื่องเล่นรีลต่อเนื่อง">
+    <div class="stage" id="stage">
+      <button class="start" id="start" type="button"><span><b>▶ เล่นตั้งแต่ตอนแรก</b><small>เล่นต่อเนื่องทุกตอนอัตโนมัติ · จบตอนแล้วไปตอนถัดไปเอง</small></span></button>
+    </div>
+    <div class="bar">
+      <button id="prev" type="button">◀ ก่อนหน้า</button>
+      <div class="now"><span class="k">［ กำลังเล่น ］</span><span class="t" id="now">—</span></div>
+      <button id="next" type="button">ถัดไป ▶</button>
+    </div>
+    <div class="opts">
+      <label><input type="checkbox" id="loop" checked> วนซ้ำเมื่อจบตอนสุดท้าย</label>
+      <a id="openfb" href="#" target="_blank" rel="noopener">เปิดรีลนี้บน Facebook ↗</a>
+    </div>
+    <div class="fallback" id="fallback">เครื่องเล่นในหน้านี้เปิดไม่ได้ในเบราว์เซอร์นี้ · กดปุ่มตอนด้านล่างเพื่อดูบน Facebook แทน</div>
+  </section>
+
+  <p class="note">กดปุ่มตอนเพื่อเล่นในเครื่องเล่นด้านบน · 13 รีล จาก 7 ตอน · รายการอัปเดตทุกวันอาทิตย์</p>
+  <ol id="list">
+<li class="ch" data-n="1"><span class="num">1</span><span class="t">รากฐานอัปยศ</span><span class="chips"><a class="chip" href="https://www.facebook.com/reel/4428986014050192/" target="_blank" rel="noopener">▶ 1/2</a><a class="chip" href="https://www.facebook.com/reel/1742957603574416/" target="_blank" rel="noopener">▶ 2/2</a></span></li>
+<li class="ch" data-n="2"><span class="num">2</span><span class="t">เสียงจากคัมภีร์</span><span class="chips"><a class="chip" href="https://www.facebook.com/reel/1750469449615032/" target="_blank" rel="noopener">▶ ตอนที่ 2</a></span></li>
+<li class="ch" data-n="3"><span class="num">3</span><span class="t">เงาในความมืด</span><span class="chips"><a class="chip" href="https://www.facebook.com/reel/1123902533532916/" target="_blank" rel="noopener">▶ 1/2</a><a class="chip" href="https://www.facebook.com/reel/4435463400001386/" target="_blank" rel="noopener">▶ 2/2</a></span></li>
+<li class="ch" data-n="4"><span class="num">4</span><span class="t">ป่าต้องห้าม</span><span class="chips"><a class="chip" href="https://www.facebook.com/reel/1840271514011694/" target="_blank" rel="noopener">▶ 1/2</a><a class="chip" href="https://www.facebook.com/reel/2479646775849099/" target="_blank" rel="noopener">▶ 2/2</a></span></li>
+<li class="ch" data-n="5"><span class="num">5</span><span class="t">หน้าผาสุดทาง</span><span class="chips"><a class="chip" href="https://www.facebook.com/reel/1395279882156942/" target="_blank" rel="noopener">▶ 1/2</a><a class="chip" href="https://www.facebook.com/reel/1291155483063070/" target="_blank" rel="noopener">▶ 2/2</a></span></li>
+<li class="ch" data-n="6"><span class="num">6</span><span class="t">ท่าแรกจากคัมภีร์</span><span class="chips"><a class="chip" href="https://www.facebook.com/reel/1400375938380427/" target="_blank" rel="noopener">▶ 1/2</a><a class="chip" href="https://www.facebook.com/reel/1822027779235920/" target="_blank" rel="noopener">▶ 2/2</a></span></li>
+<li class="ch" data-n="7"><span class="num">7</span><span class="t">สายตาที่จับจ้อง</span><span class="chips"><a class="chip" href="https://www.facebook.com/reel/1101839265828633/" target="_blank" rel="noopener">▶ 1/2</a><a class="chip" href="https://www.facebook.com/reel/2507524139752493/" target="_blank" rel="noopener">▶ 2/2</a></span></li>
   </ol>
   <footer>รีลตอนใหม่โพสต์ทุกวัน · ตอนที่ยังไม่มีในรายการ ดูได้ที่แท็บ Reels ของเพจ Online Novel</footer>
 </div>
+
+<script>
+  const REELS = [{"n": 1, "part": 1, "parts": 2, "title": "รากฐานอัปยศ", "url": "https://www.facebook.com/reel/4428986014050192/", "date": "2026-08-24", "sec": 48}, {"n": 1, "part": 2, "parts": 2, "title": "รากฐานอัปยศ", "url": "https://www.facebook.com/reel/1742957603574416/", "date": "2026-08-24", "sec": 56}, {"n": 2, "part": 1, "parts": 1, "title": "เสียงจากคัมภีร์", "url": "https://www.facebook.com/reel/1750469449615032/", "date": "2026-09-06", "sec": 75}, {"n": 3, "part": 1, "parts": 2, "title": "เงาในความมืด", "url": "https://www.facebook.com/reel/1123902533532916/", "date": "2026-09-19", "sec": 93}, {"n": 3, "part": 2, "parts": 2, "title": "เงาในความมืด", "url": "https://www.facebook.com/reel/4435463400001386/", "date": "2026-09-19", "sec": 94}, {"n": 4, "part": 1, "parts": 2, "title": "ป่าต้องห้าม", "url": "https://www.facebook.com/reel/1840271514011694/", "date": "2026-09-20", "sec": 95}, {"n": 4, "part": 2, "parts": 2, "title": "ป่าต้องห้าม", "url": "https://www.facebook.com/reel/2479646775849099/", "date": "2026-09-20", "sec": 89}, {"n": 5, "part": 1, "parts": 2, "title": "หน้าผาสุดทาง", "url": "https://www.facebook.com/reel/1395279882156942/", "date": "2026-09-20", "sec": 82}, {"n": 5, "part": 2, "parts": 2, "title": "หน้าผาสุดทาง", "url": "https://www.facebook.com/reel/1291155483063070/", "date": "2026-09-20", "sec": 88}, {"n": 6, "part": 1, "parts": 2, "title": "ท่าแรกจากคัมภีร์", "url": "https://www.facebook.com/reel/1400375938380427/", "date": "2026-09-20", "sec": 78}, {"n": 6, "part": 2, "parts": 2, "title": "ท่าแรกจากคัมภีร์", "url": "https://www.facebook.com/reel/1822027779235920/", "date": "2026-09-20", "sec": 80}, {"n": 7, "part": 1, "parts": 2, "title": "สายตาที่จับจ้อง", "url": "https://www.facebook.com/reel/1101839265828633/", "date": "2026-09-20", "sec": 73}, {"n": 7, "part": 2, "parts": 2, "title": "สายตาที่จับจ้อง", "url": "https://www.facebook.com/reel/2507524139752493/", "date": "2026-09-20", "sec": 93}];                                   // [{n, part, parts, title, url}] in playing order
+  let i = 0, sdkReady = false, pendingParse = false;
+  const stage = document.getElementById("stage"), now = document.getElementById("now"), openfb = document.getElementById("openfb");
+  const label = r => "ตอนที่ " + r.n + (r.parts > 1 ? " · " + r.part + "/" + r.parts : "") + " — " + r.title;
+
+  function mark() {
+    document.querySelectorAll(".chip").forEach((c, k) => c.classList.toggle("on", k === i));
+    document.querySelectorAll(".ch").forEach(li => li.classList.toggle("playing", li.dataset.n == REELS[i].n));
+    now.textContent = label(REELS[i]); openfb.href = REELS[i].url;
+  }
+  function load(k) {                                        // swap in a fresh embed for reel k and autoplay it
+    i = (k + REELS.length) % REELS.length; mark();
+    stage.innerHTML = '<div class="fb-video" data-href="' + REELS[i].url + '" data-width="auto" data-autoplay="true" data-allowfullscreen="true" data-show-text="false" data-show-captions="true"></div>';
+    if (sdkReady) FB.XFBML.parse(stage); else pendingParse = true;
+  }
+  function next() {
+    if (i + 1 >= REELS.length && !document.getElementById("loop").checked) { now.textContent = "จบทุกตอนแล้ว ✦"; return; }
+    load(i + 1);
+  }
+  document.getElementById("start").addEventListener("click", () => load(0));
+  document.getElementById("next").addEventListener("click", next);
+  document.getElementById("prev").addEventListener("click", () => load(i - 1));
+  document.querySelectorAll(".chip").forEach((c, k) => c.addEventListener("click", e => { e.preventDefault(); load(k); window.scrollTo({ top: 0, behavior: "smooth" }); }));
+
+  window.fbAsyncInit = function () {
+    FB.init({ xfbml: false, version: "v21.0" });
+    FB.Event.subscribe("xfbml.ready", msg => {
+      if (msg.type !== "video") return;
+      const player = msg.instance;
+      player.subscribe("finishedPlaying", () => setTimeout(next, 400));   // the playlist moment: roll into the next chapter
+      player.subscribe("error", () => setTimeout(next, 1500));            // an unplayable embed skips ahead instead of stalling
+    });
+    sdkReady = true; if (pendingParse) FB.XFBML.parse(stage);
+  };
+  (function () {
+    const s = document.createElement("script"); s.async = true; s.defer = true; s.crossOrigin = "anonymous";
+    s.src = "https://connect.facebook.net/th_TH/sdk.js";
+    s.onerror = () => { document.getElementById("fallback").style.display = "block"; };
+    document.head.appendChild(s);
+  })();
+  mark();
+</script>
 </body>
 </html>
