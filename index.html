@@ -127,7 +127,7 @@
     for (const [g, cs] of groups) {
       const a = g * 20 + 1, b = Math.max(...cs.map(c => c.n));
       html += `<section class="group" id="g${g}"><h2><span>ตอนที่ ${a}–${b}</span><small>${cs.length} ตอน</small></h2><ol>`;
-      for (const c of cs) html += `<li><a class="row" href="${esc(c.u)}" target="_blank" rel="noopener"><span class="num">${c.n}</span><span class="title">${esc(c.t)}</span><span class="date">${thDate(c.d)}</span></a></li>`;
+      for (const c of cs) html += `<li id="c${c.n}"><a class="row" href="${esc(c.u)}" target="_blank" rel="noopener"><span class="num">${c.n}</span><span class="title">${esc(c.t)}</span><span class="date">${thDate(c.d)}</span></a></li>`;
       html += "</ol></section>";
     }
     list.innerHTML = html;
@@ -135,8 +135,8 @@
   q.addEventListener("input", () => render(q.value));
   document.getElementById("latest").addEventListener("click", () => {
     q.value = ""; render("");
-    const last = DATA[DATA.length - 1]; const el = last && document.getElementById("g" + Math.floor((last.n - 1) / 20));
-    if (el) el.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
+    const last = DATA[DATA.length - 1]; const el = last && document.getElementById("c" + last.n);   // 15 Oct: the newest chapter itself (scrolling to its group start stopped at ~187 on phones)
+    if (el) el.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "center" });
   });
 </script>
 
