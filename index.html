@@ -46,7 +46,7 @@
   .plate::after { top: -10px; right: -10px; border-left: 0; border-bottom: 0; }
   .plate i::before { bottom: -10px; left: -10px; border-right: 0; border-top: 0; }
   .plate i::after { bottom: -10px; right: -10px; border-left: 0; border-top: 0; }
-  .cover { height: min(56svh, 56vh, 440px); width: auto; max-width: min(88vw, 100%); aspect-ratio: 4 / 5; display: block; }   /* sized by the phone's height so cover + buttons fit one screen */
+  .cover { width: min(56svh, 56vh, 440px, calc(100vw - 72px)); height: auto; aspect-ratio: 1 / 1; display: block; object-fit: contain; background: #0c0e14; }   /* square rotating cover (29 Oct 2026), sized by the phone's height and width so cover + buttons fit one screen without cropping */
   @keyframes ignite { from { box-shadow: 0 0 0 0 rgba(224,187,94,0); border-color: var(--gold-line); } to { box-shadow: 0 0 60px 8px rgba(224,187,94,.22); border-color: var(--gold); } }
   .vh { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }   /* heading for screen readers and the tab; the cover carries the visible title */
   .actions { display: flex; flex-wrap: nowrap; gap: 10px; justify-content: center; width: 100%; }
@@ -87,7 +87,19 @@
 
 <header class="hero">
   <div class="wrap hero-inner">
-    <div class="plate"><i></i><h1 class="vh">สารบัญ ระบบเทพยุทธ์เจ้าคัมภีร์</h1><img class="cover" src="img/cover.jpg" alt="ปกนิยาย ระบบเทพยุทธ์เจ้าคัมภีร์" width="720" height="900"></div>
+    <div class="plate"><i></i><h1 class="vh">สารบัญ ระบบเทพยุทธ์เจ้าคัมภีร์</h1><img class="cover" id="cover" alt="ปกนิยาย ระบบเทพยุทธ์เจ้าคัมภีร์" width="900" height="900"></div>
+    <script>   /* cover rotation (29 Oct 2026): random image for the visitor's Thai time slot, from data/covers.json (tools/sync_toc_covers.py) */
+      (function () {
+        const img = document.getElementById("cover"), fallback = () => { img.src = "img/cover.jpg"; };
+        const h = +new Intl.DateTimeFormat("en-GB", { hour: "numeric", hourCycle: "h23", timeZone: "Asia/Bangkok" }).format(new Date());
+        const slot = h >= 5 && h < 12 ? "morning" : h >= 12 && h < 16 ? "afternoon" : h >= 16 && h < 19 ? "evening" : "night";
+        fetch("data/covers.json", { cache: "no-cache" }).then(r => r.json()).then(c => {
+          const list = c[slot] && c[slot].length ? c[slot] : Object.values(c).flat();
+          if (!list.length) return fallback();
+          img.onerror = fallback; img.src = list[Math.floor(Math.random() * list.length)];
+        }).catch(fallback);
+      })();
+    </script>
     <div class="actions">
       <a class="btn primary" href="https://www.facebook.com/watch/1195463440326870/1782070199461671" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>ดู Reels ทุกตอน</a>
       <a class="btn" href="https://www.facebook.com/profile.php?id=1195463440326870" target="_blank" rel="noopener">เพจ Online Novel</a>
