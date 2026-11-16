@@ -40,11 +40,28 @@
   .bar input:focus { border-color:var(--gold); }
   .bar button { font:inherit; font-size:14px; color:var(--gold); background:var(--panel-2); border:1px solid var(--gold-line); padding:0 12px; cursor:pointer; white-space:nowrap; }
   .empty { color:var(--muted); padding:16px 4px; }
+  /* 16 Nov 2026 (user): rotating cover like the chapter index (same images, ../data/covers.json) */
+  .hero { display:grid; justify-items:center; padding-block:6px 4px; }
+  .plate { position:relative; padding:8px; border:1px solid var(--gold); outline:1px solid var(--gold-line); outline-offset:6px; background:rgba(10,12,17,.5); }
+  .cover { width:min(56svh, 56vh, 440px, calc(100vw - 72px)); height:auto; aspect-ratio:1/1; display:block; object-fit:contain; background:#0c0e14; }
 </style>
 </head>
 <body>
 <div class="wrap">
   <header><h1>Reels ทุกตอน</h1><a href="../">← สารบัญ</a></header>
+  <div class="hero"><div class="plate"><img class="cover" id="cover" alt="ปกนิยาย ระบบเทพยุทธ์เจ้าคัมภีร์" width="900" height="900"></div></div>
+  <script>
+    (function () {   /* same rotation as the chapter index: random cover for the visitor's Thai time slot */
+      const img = document.getElementById("cover"), fallback = () => { img.src = "../img/cover.jpg"; };
+      const h = +new Intl.DateTimeFormat("en-GB", { hour: "numeric", hourCycle: "h23", timeZone: "Asia/Bangkok" }).format(new Date());
+      const slot = h >= 5 && h < 12 ? "morning" : h >= 12 && h < 16 ? "afternoon" : h >= 16 && h < 19 ? "evening" : "night";
+      fetch("../data/covers.json", { cache: "no-cache" }).then(r => r.json()).then(c => {
+        const list = c[slot] && c[slot].length ? c[slot] : Object.values(c).flat();
+        if (!list.length) return fallback();
+        img.onerror = fallback; img.src = "../" + list[Math.floor(Math.random() * list.length)];
+      }).catch(fallback);
+    })();
+  </script>
 
   <p class="note" id="note">กดปุ่มตอนเพื่อเปิดรีลบน Facebook · รายการอัปเดตทุกวัน</p>
 </div>
